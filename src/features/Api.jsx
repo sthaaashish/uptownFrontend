@@ -6,6 +6,7 @@ export const Api = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: baseUrl }),
   tagTypes: ["API"],
   endpoints: (builder) => ({
+
     getAllBlogs: builder.query({
       query: (query) => ({
         url: "/getBlogs",
@@ -34,6 +35,40 @@ export const Api = createApi({
       providesTags: ["API"],
     }),
 
+    addProperty: builder.mutation({
+      query: (query) => ({
+        url: "/addProperty",
+        body: query.body,
+        method: "POST",
+        headers: {
+          Authorization: query.token,
+        },
+      }),
+      invalidatesTags: ["API"],
+    }),
+
+    deleteProperty: builder.mutation({
+      query: (query) => ({
+        url: `/delete-property/${query.id}`,
+        body: query.body,
+        method: "DELETE",
+        headers: {
+          Authorization: query.token,
+        },
+      }),
+    }),
+    updateProperty: builder.mutation({
+      query: (query) => ({
+        url: `/update-product/${query.id}`,
+        body: query.body,
+        method: "PATCH",
+        headers: {
+          Authorization: query.token,
+        },
+      }),
+      invalidatesTags: ["API"],
+    }),
+
     postCommentByBlogId: builder.mutation({
       query: (query) => ({
         url: `/addBlogComment/${query.id}`,
@@ -45,6 +80,7 @@ export const Api = createApi({
       }),
       providesTags: ["API"],
     }),
+
 
     postDetailsandMessages: builder.mutation({
       query: (query) => ({
@@ -66,5 +102,8 @@ export const {
   useGetAllPropertiesQuery,
   useGetPropertiesByIdQuery,
   usePostCommentByBlogIdMutation,
-  usePostDetailsandMessagesMutation
+  usePostDetailsandMessagesMutation,
+  useDeletePropertyMutation,
+  useAddPropertyMutation,
+  useUpdatePropertyMutation
 } = Api;

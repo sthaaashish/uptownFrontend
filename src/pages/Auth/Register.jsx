@@ -78,6 +78,7 @@ function Register() {
                   })}
                   className=" w-full p-3  text-sm border border-black rounded "
                   placeholder="enter password"
+                  type="password"
                 />
                 {errors.password && (
                   <span className="text-red-500">

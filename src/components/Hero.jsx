@@ -4,8 +4,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
   faMagnifyingGlass,
+  faShoppingBasket,
   faSignOut,
   faTimes,
+  faUser,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import FadeIn from "./FadeIn";
@@ -32,20 +34,33 @@ const navbarItems = [
   { label: "Contact", link: "/contact" },
 ];
 
+const avatarMenu = [
+  { label: "My Profile", icon: faUser, link: "" },
+  { label: "Property List", icon: faShoppingBasket, link: "/propertyList" },
+  { label: "Log Out", icon: faSignOut, link: "" },
+];
 const Hero = ({ title, subtitle }) => {
   const [showMenuIcon, setShowMenuIcon] = useState(false);
 
   const toggleMenuIcon = () => {
     setShowMenuIcon(!showMenuIcon);
   };
-const nav=useNavigate(  )
+  const nav = useNavigate();
   const { user } = useSelector((store) => store.user);
   const dispatch = useDispatch();
 
-  const handlesignOut = () => {
-    nav("/", { replace: true });
-    dispatch(clearAll());
-    toast.success("You are signed out");
+  const handleMenuItemClick = (label, link) => {
+    if (link) {
+      nav(link);
+    }
+
+    if (label === "Log Out") {
+      nav("/", { replace: true });
+      dispatch(clearAll());
+      toast.success("You are signed out");
+    }
+
+    closeDrawer();
   };
 
   return (
@@ -80,17 +95,23 @@ const nav=useNavigate(  )
                   />
                 </MenuHandler>
                 <MenuList className="p-1">
-                  <MenuItem className="flex items-center gap-2 rounded hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10">
-                    <FontAwesomeIcon icon={faSignOut} />
-                    <Typography
-                      as="span"
-                      variant="small"
-                      className="font-normal"
-                      onClick={() => handlesignOut()}
+                  {avatarMenu.map(({ label, icon, link }) => (
+                    <MenuItem
+                      key={label}
+                      onClick={() => handleMenuItemClick(label, link)}
+                      className="flex items-center gap-2 rounded hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
                     >
-                      Logout
-                    </Typography>
-                  </MenuItem>
+                      <FontAwesomeIcon icon={icon} />
+                      <Typography
+                        as="span"
+                        variant="small"
+                        className="font-normal"
+                        color={label === "Log Out" ? "red" : "inherit"}
+                      >
+                        {label}
+                      </Typography>
+                    </MenuItem>
+                  ))}
                 </MenuList>
               </Menu>
             )}
@@ -129,35 +150,31 @@ const nav=useNavigate(  )
 
         <div className="flex flex-col items-center justify-center h-full mx-auto">
           <div className="block md:w-3/5 text-center">
-            <FadeIn delay={0.2} direction="down" >
+            <FadeIn delay={0.2} direction="down">
               <h1 className="mt-[90px] text-center text-5xl leading-tight xs:text-[64px] max-w-[1050px]">
                 {title}
               </h1>
             </FadeIn>
             {subtitle && (
-              <FadeIn delay={0.4} direction="right" >
+              <FadeIn delay={0.4} direction="right">
                 <p className=" ">{subtitle}</p>
               </FadeIn>
             )}
           </div>
           <div className="relative  md:w-[600px] mx-auto">
-  
-
-  <input
-    type="search"
-    className="block w-[400px]  md:w-[600px] p-4  text-sm text-gray-900 border border-gray-300 rounded-3xl bg-gray-50"
-    placeholder="Search locations"
-    required
-  />
-  <button
-    type="submit"
-    className="absolute top-0 right-0 p-2.5 h-full text-white bg-blue-700 rounded-r-3xl border border-blue-700"
-  >
-    <FontAwesomeIcon icon={faMagnifyingGlass} />
-  </button>
-   
-</div>
-
+            <input
+              type="search"
+              className="block w-[400px]  md:w-[600px] p-4  text-sm text-gray-900 border border-gray-300 rounded-3xl bg-gray-50"
+              placeholder="Search locations"
+              required
+            />
+            <button
+              type="submit"
+              className="absolute top-0 right-0 p-2.5 h-full text-white bg-blue-700 rounded-r-3xl border border-blue-700"
+            >
+              <FontAwesomeIcon icon={faMagnifyingGlass} />
+            </button>
+          </div>
         </div>
       </div>
     </>

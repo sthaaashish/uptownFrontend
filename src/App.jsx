@@ -14,6 +14,9 @@ import Login from "./pages/Auth/Login";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UserRoute from "./components/UserRoute";
+import PropertyList from "./pages/AdminPage/PropertyList";
+import AddProperty from "./pages/AdminPage/AddProperty";
+import PropertyEdit from "./pages/AdminPage/PropertyEdit";
 
 function App() {
   return (
@@ -56,6 +59,13 @@ function App() {
         <Route element={<RootLayout title={"PropertyDetail"} />}>
           <Route path="propertiesDetails/:id" element={<PropertiesDetail />} />
         </Route>
+
+        <Route element={<RootLayout title={"Property List"} />}>
+          <Route path="propertyList" element={<PropertyList />} />
+          <Route path="property/add" element={<AddProperty />} />
+          <Route path="property/edit/:id" element={<PropertyEdit/>}/>
+        </Route>
+
         <Route element={<UserRoute />}>
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />

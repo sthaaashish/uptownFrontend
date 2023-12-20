@@ -31,7 +31,7 @@ const Properties = () => {
                   <div className="relative flex flex-col justify-center">
                     <div className="">
                       <img
-                        src={`${baseUrl}${propertyData.image}`}
+                        src={`${baseUrl}${propertyData.property_image}`}
                         className="w-[400px]  h-[300px]"
                       />
                     </div>
@@ -103,7 +103,7 @@ export function HomeProperties() {
                   <div className="relative flex flex-col justify-center">
                     <div>
                       <img
-                        src={`${baseUrl}${propertyData.image}`}
+                        src={`${baseUrl}${propertyData.property_image}`}
                         className="w-[400px]  h-[300px]"
                       />
                     </div>

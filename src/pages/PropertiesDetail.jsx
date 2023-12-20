@@ -18,7 +18,7 @@ const PropertiesDetail = () => {
         data?.map((items) => (
           <div key={items._id}>
             <div className=" mx-auto p-12 ">
-              <img src={`${baseUrl}${items.image}`} className="w-full " />
+              <img src={`${baseUrl}${items.property_image}`} className="w-full " />
             </div>
             <div>
               <h1 className="text-center">{items.property_address}</h1>

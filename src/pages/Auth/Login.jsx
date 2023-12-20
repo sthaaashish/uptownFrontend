@@ -16,7 +16,7 @@ function Login() {
     control,
     formState: { errors },
   } = useForm();
-  const [userLogin, { isLoading, data }] = useUserLoginMutation();
+  const [userLogin, { isLoading, }] = useUserLoginMutation();
 
   const onSubmit = async (data) => {
     try {
@@ -26,7 +26,7 @@ function Login() {
       toast.success("Successfully logged in");
     } catch (err) {
       console.log(err);
-      toast.error(err.message);
+      toast.error(err.data.message);
     }
   };
 
@@ -63,10 +63,10 @@ function Login() {
                 <input
                   {...register("password", {
                     required: "Password is required",
-                    pattern: /^\S+@\S+$/i,
                   })}
                   className=" w-full p-3  text-sm border border-black rounded "
                   placeholder="Your password"
+                  type="password"
                 />
                 {errors.password && (
                   <span className="text-red-500">
