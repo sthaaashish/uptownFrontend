@@ -13,7 +13,7 @@ const PropertyEdit = () => {
 
   return (
     <div>
-      {data && <EditForm data={data}/>}
+    {data && <EditForm data={data}/>}
     </div>
   )
 }

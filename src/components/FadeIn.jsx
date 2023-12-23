@@ -1,7 +1,5 @@
-// framer motion
-import { motion, useAnimation, useInView } from "framer-motion";
 
-// react
+import { motion, useAnimation, useInView } from "framer-motion";
 import { useEffect, useRef } from "react";
 
 const FadeIn = ({ children, delay, direction, fullWidth, padding }) => {

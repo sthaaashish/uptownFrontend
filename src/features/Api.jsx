@@ -59,7 +59,7 @@ export const Api = createApi({
     }),
     updateProperty: builder.mutation({
       query: (query) => ({
-        url: `/update-product/${query.id}`,
+        url: `/update-property/${query.id}`,
         body: query.body,
         method: "PATCH",
         headers: {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Tabs,
   TabsHeader,
@@ -6,31 +6,36 @@ import {
   Tab,
   TabPanel,
 } from "@material-tailwind/react";
- 
-export function UnderlineTabs({data}) {
-  const [activeTab, setActiveTab] = React.useState("html");
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheckToSlot } from "@fortawesome/free-solid-svg-icons";
+import CommentForm from "./CommentForm";
+
+export function UnderlineTabs({ data }) {
+  const [activeTab, setActiveTab] = useState("features");
   const headingTabs = [
     {
       label: "Features",
-      value: "html",
-      desc: `It really matters and then like it really doesn't matter.
-      What matters is the people who are sparked by it. And the people 
-      who are like offended by it, it doesn't matter.`,
+      value: "features",
+      desc: [
+        {
+          label: "Floor Area",
+          value: data.property_floorArea,
+        },
+        { label: "BedRooms", value: data.property_beds },
+        { label: "Bathrooms", value: data.property_bathrooms },
+        { label: "Location", value: data.property_address },
+        { label: "Price", value: data.property_price },
+      ],
     },
     {
       label: "Discription",
-      value: "react",
-      desc: `Because it's about motivating the doers. Because I'm here
-      to follow my dreams and inspire other people to follow their dreams, too.`,
+      value: "discription",
+      desc: data.property_detail,
     },
     {
       label: "Review",
-      value: "vue",
-      desc: `We're not always in the position that we want to be at.
-      We're constantly growing. We're constantly making mistakes. We're
-      constantly trying to express ourselves and actualize our dreams.`,
+      value: "review",
     },
-   
   ];
   return (
     <Tabs value={activeTab} className="p-12 pt-6">
@@ -55,7 +60,26 @@ export function UnderlineTabs({data}) {
       <TabsBody className="">
         {headingTabs.map(({ value, desc }) => (
           <TabPanel key={value} value={value}>
-            {desc}
+            {value === "features" ? (
+              <ul>
+                {desc.map((items, index) => (
+                  <li key={index} className="text-black">
+                    <FontAwesomeIcon
+                      icon={faCheckToSlot}
+                      className="text-pink-700 px-2"
+                    />
+                    {items.label}:{items.value}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>{desc}</p>
+            )}
+            {value === "review" && (
+              <div>
+                <CommentForm />
+              </div>
+            )}
           </TabPanel>
         ))}
       </TabsBody>

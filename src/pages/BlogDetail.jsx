@@ -1,19 +1,14 @@
 import {
   Button,
-  Chip,
   Input,
   List,
   ListItem,
-  ListItemSuffix,
   Typography,
 } from "@material-tailwind/react";
-import React from "react";
-import bg2 from "../assets/bg_2.jpg";
-import work4 from "../assets/about.jpg";
-import work2 from "../assets/bg_1.jpg";
-import { useForm, Controller } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import React, { useState } from "react";
+import {  useParams } from "react-router-dom";
 import {
+  useGetAllBlogsQuery,
   useGetBlogsByIdQuery,
   usePostCommentByBlogIdMutation,
 } from "../features/Api";
@@ -22,6 +17,8 @@ import { toast } from "react-toastify";
 import Comments from "../components/Comments";
 import Loading from "../components/Loading";
 import { baseUrl } from "../features/constant";
+import FadeIn from "../components/FadeIn";
+import CommentForm from "../components/CommentForm";
 
 const listItemsLabels = [
   { label: "jobs", value: 12 },
@@ -33,19 +30,33 @@ const listItemsLabels = [
 ];
 
 const BlogDetail = () => {
-  const {
-    handleSubmit,
-    control,
-    register,
-    reset,
-    formState: { errors },
-  } = useForm();
   const { id } = useParams();
+  const [filterCategory, setFilterCategory] = useState("");
   const { data: blogsDetail, isLoading, error } = useGetBlogsByIdQuery(id);
-  const [postComments, { isLoading: is_loading }] =
-    usePostCommentByBlogIdMutation();
-
+  const { data: blog_Data, isLoading: blog_isLoading } = useGetAllBlogsQuery();
+  const [postComments, { isLoading: is_loading }] = usePostCommentByBlogIdMutation();
   const { user } = useSelector((store) => store.user);
+
+  const filterBlogs = blog_Data?.filter((blogs) =>
+    filterCategory
+      ? blogs.category.toLowerCase() === filterCategory.toLowerCase()
+      : true
+  );
+  const handleFilterChange = (val) => {
+    setFilterCategory(val);
+  };
+
+ 
+
+  //shuffling and generating random blogs
+  const shuffleBlogs = (items) => {
+    for (let i = items.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [items[i], items[j]] = [items[j], items[i]];
+    }
+    return items;
+  };
+  const randomBlogs = shuffleBlogs(blog_Data ? [...blog_Data] : []).slice(0, 3);
 
   const onSubmit = async (val) => {
     try {
@@ -61,18 +72,14 @@ const BlogDetail = () => {
       toast.success("commented successfully");
       reset();
     } catch (err) {
-      // Handle error
       toast.error(err.data.message);
-
-      console.log(err);
     }
   };
 
-  if (isLoading || is_loading) {
-    return <Loading/>
+  if (isLoading || is_loading || blog_isLoading) {
+    return <Loading />;
   }
 
-  console.log(blogsDetail)
   return (
     <div className=" md:flex flex-col md:flex-row gap-14 p-12">
       <div className="w-full md:w-1/4 mb-8 md:mb-0  md:order-1">
@@ -91,49 +98,36 @@ const BlogDetail = () => {
         </div>
         <div className="">
           <h1>Categories</h1>
-          {listItemsLabels.map((items, index) => (
-            <>
-              <List key={index}>
-                <ListItem>
-                  {items.label}
-                  <ListItemSuffix>
-                    <Chip
-                      value={items.value}
-                      variant="ghost"
-                      size="sm"
-                      className="rounded-full"
-                    />
-                  </ListItemSuffix>
-                </ListItem>
-              </List>
-            </>
-          ))}
+          <List>
+            <ListItem onClick={() => handleFilterChange("Land")}>Land</ListItem>
+            <ListItem onClick={() => handleFilterChange("Housing")}>
+              Housing
+            </ListItem>
+            <ListItem onClick={() => handleFilterChange("office")}>
+              Office
+            </ListItem>
+            <ListItem onClick={() => handleFilterChange("Apartments")}>
+              Apartments
+            </ListItem>
+            <ListItem onClick={() => handleFilterChange("Investment")}>
+              Investment
+            </ListItem>
+          </List>
         </div>
 
         <div>
           <h1>Recent Blog</h1>
           <div className="space-y-4 mt-2">
-            <div className="flex gap-2">
-              <img src={work2} alt="" className="h-20 w-20" />
-              <h1>
-                Even the all-powerful Pointing has no control about the blind
-                texts
-              </h1>
-            </div>
-            <div className="flex gap-2">
-              <img src={work4} alt="" className="h-20 w-20" />
-              <h1>
-                Even the all-powerful Pointing has no control about the blind
-                texts
-              </h1>
-            </div>
-            <div className="flex gap-2">
-              <img src={work2} alt="" className="h-20 w-20" />
-              <h1>
-                Even the all-powerful Pointing has no control about the blind
-                texts
-              </h1>
-            </div>
+            {randomBlogs.map((newBlogs) => (
+              <div className="flex gap-2">
+                <img
+                  src={`${baseUrl}${newBlogs.property_image}`}
+                  alt=""
+                  className="h-20 w-20"
+                />
+                <h1>{newBlogs.title}</h1>
+              </div>
+            ))}
           </div>
         </div>
         <div className="mt-6">
@@ -162,71 +156,46 @@ const BlogDetail = () => {
           </Typography>
         </div>
       </div>
-
       <div className="w-full md:w-3/4  md:order-2">
-        {blogsDetail && (
-          <>
-            <h1 className="text-4xl mb-4">{blogsDetail.title}</h1>
-            <p>{blogsDetail.discription}</p>
-
-            <img src={`${baseUrl}${blogsDetail.image}`} alt="Background" />
-
-            <h1 className="text-4xl mt-4">#2. Creative WordPress Themes</h1>
-
-            <img src={bg2} alt="Work 4" />
-
-            <p>{blogsDetail.discription}</p>
-
-            <div className="mt-6">
-              <Comments data={blogsDetail} />
-            </div>
-          </>
-        )}
-
-        <div>
-          <h1 className="mt-6 text-xl">Leave a Comment</h1>
-          <div className="flex flex-col justify-center items-center gap-4 mt-4 shadow-2xl bg-gray-100 p-6 md:w-[700px] mx-auto">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              <input
-                {...register("name", { required: "Name is required" })}
-                className="w-[300px] md:w-[600px] p-3 text-sm border border-black rounded"
-                placeholder="Name"
-              />
-              {errors.name && (
-                <span className="text-red-500">{errors.name.message}</span>
-              )}
-
-              <input
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: /^\S+@\S+$/i,
-                })}
-                className="w-[300px] md:w-[600px] p-3 text-sm border border-black rounded"
-                placeholder="Your Email"
-                type="email"
-              />
-              {errors.email && (
-                <span className="text-red-500">{errors.email.message}</span>
-              )}
-
-              <textarea
-                {...register("comment", { required: "Comment is required" })}
-                placeholder="Comment"
-                className="w-[300px] md:w-[600px] h-[200px] p-3 border border-black rounded"
-              />
-              {errors.comment && (
-                <span className="text-red-500">{errors.comment.message}</span>
-              )}
-
-              <button
-                className="bg-pink-400 text-white rounded p-4"
-                type="submit"
-              >
-                Post Comment
-              </button>
-            </form>
+        {filterCategory ? (
+          <div className="md:grid">
+            {filterBlogs.map((items, index) => (
+              <FadeIn delay={index * 0.2} direction={"up"}>
+             <div className="p-4" >
+                  <h1>{items.title}</h1>
+                  <img
+                    src={`${baseUrl}${items.property_image}`}
+                    className="w-[400px] h-[300px]"
+                  />
+                  <Typography>
+                    {items.discription.substring(0, 100)}...
+                  </Typography>
+                </div>
+              </FadeIn>
+            ))}
           </div>
-        </div>
+        ) : (
+          <div>
+            {blogsDetail && (
+              <>
+                <h1 className="text-4xl mb-4">{blogsDetail.title}</h1>
+                <p>{blogsDetail.discription}</p>
+
+                <img
+                  src={`${baseUrl}${blogsDetail.property_image}`}
+                  alt="Background"
+                  className="w-full"
+                />
+                <div className="mt-6">
+                  <Comments data={blogsDetail} />
+                </div>
+              </>
+            )}
+            <div>
+              <CommentForm onSubmit={onSubmit} />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

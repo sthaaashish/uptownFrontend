@@ -12,6 +12,7 @@ const Loading = () => {
         direction="1"
         mode="normal"
       ></lottie-player>
+
     </div>
   );
 };

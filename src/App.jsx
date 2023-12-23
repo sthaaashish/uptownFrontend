@@ -63,7 +63,7 @@ function App() {
         <Route element={<RootLayout title={"Property List"} />}>
           <Route path="propertyList" element={<PropertyList />} />
           <Route path="property/add" element={<AddProperty />} />
-          <Route path="property/edit/:id" element={<PropertyEdit/>}/>
+          <Route path="property/edit/:id" element={<PropertyEdit />} />
         </Route>
 
         <Route element={<UserRoute />}>

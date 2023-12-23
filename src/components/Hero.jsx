@@ -69,7 +69,7 @@ const Hero = ({ title, subtitle }) => {
         className="h-screen relative flex flex-col items-center"
         style={{ background: `url(${bg_1})`, backgroundSize: "cover" }}
       >
-        <div className="relative  hidden w-full max-w-[1490px] md:flex items-center justify-between pt-6 mx-auto px-10">
+        <div className="relative hidden  w-full max-w-[1490px] md:flex items-center justify-between pt-6 mx-auto px-10">
           <h1 className="text-3xl font-bold">Uptown</h1>
           <ul className="md:flex items-center gap-10 ">
             {navbarItems.map((item, index) => (
@@ -80,7 +80,7 @@ const Hero = ({ title, subtitle }) => {
               </li>
             ))}
             {user === null && (
-              <div>
+              <div className="flex">
                 <Link to="/register">Sign In</Link>
               </div>
             )}

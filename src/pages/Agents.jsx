@@ -7,8 +7,8 @@ import team5 from "../assets/team-5.jpg";
 import team6 from "../assets/team-6.jpg";
 import team7 from "../assets/team-7.jpg";
 import team8 from "../assets/team-8.jpg";
-import Cards from "../components/Cards";
 import HeadingLine from "../components/HeadingLine";
+import FadeIn from "../components/FadeIn";
 
 const agents = [
   { image: team1, name: "James Stallon", label: "20 properties " },
@@ -21,13 +21,40 @@ const agents = [
   { image: team8, name: "James Stallon", label: "5properties" },
 ];
 
+const Cards = ({ data, onClick,index }) => {
+  return (
+    <>
+     
+        <div
+          className="relative flex flex-col items-center space-y-4 "
+          onClick={onClick}
+        >
+           <FadeIn delay={index * 0.2} direction="up">
+          <div className=" overflow-hidden">
+            <img
+              src={data.image}
+              alt="images"
+              className="md:h-[350px] w-[400px] transition ease-in-out delay-150    hover:-translate-y-1 hover:scale-110  duration-300"
+            />
+          </div>
+          <div className="absolute bottom-0 bg-white p-4 bg-opacity-50 text-center">
+            <h5>{data.name}</h5>
+            <p>{data.label}</p>
+          </div>
+          </FadeIn>
+        </div>
+     
+    </>
+  );
+};
+
 const Agents = () => {
   return (
     <div className="mt-6 p-12">
       <div className="md:grid grid-cols-4 space-y-4 gap-4">
         {agents.map((agent, index) => (
           <>
-            <Cards key={index} data={agent} />
+            <Cards index={index} data={agent} />
           </>
         ))}
       </div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useAddPropertyMutation } from "../../features/Api";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -12,6 +12,8 @@ const AddProperty = () => {
   const [addProperty, { isLoading, error }] = useAddPropertyMutation();
   const { user } = useSelector((store) => store.user);
   const nav = useNavigate();
+
+  const [propertyPhoto, setPropertyPhoto] = useState(null);
 
   const validationSchema = Yup.object().shape({
     property_name: Yup.string()
@@ -37,16 +39,16 @@ const AddProperty = () => {
 
     property_detail: Yup.string().required("Property detail is required"),
 
-    property_image: Yup.mixed()
-      .test("required", "You need to provide a file", (value) => {
-        return value && value.length;
-      })
-      .test("fileSize", "The file is too large", (value, context) => {
-        return value && value[0] && value[0].size <= 200000;
-      })
-      .test("type", "We only support jpeg", function (value) {
-        return value && value[0] && value[0].type === "image/jpeg";
-      }),
+    // property_image: Yup.mixed()
+    // .test("required", "You need to provide a file", (value) => {
+    //   return value && value.length;
+    // })
+    // .test("fileSize", "The file is too large", (value, context) => {
+    //   return value && value[0] && value[0].size <= 200000;
+    // })
+    // .test("type", "We only support jpeg", function (value) {
+    //   return value && value[0] && value[0].type === "image/jpeg";
+    // }),
   });
 
   const {
@@ -59,18 +61,36 @@ const AddProperty = () => {
     resolver: yupResolver(validationSchema),
   });
 
+  const handleImageChange = (e) => {
+    setPropertyPhoto(e.target.files[0]);
+    console.log(e.target.files[0]);
+
+    const file = e.target.files[0];
+      console.log("Selected file:", file);
+      setValue("property_image", file);
+  
+      const reader = new FileReader();
+      reader.onload = () => {
+        setValue("preview", reader.result);
+      };
+  
+      if (file) {
+        reader.readAsDataURL(file);
+      }
+  };
+
+  console.log(error);
   const submitForm = async (val) => {
     console.log("Submitting form", val);
     let formData = new FormData();
     formData.append("property_name", val.property_name);
     formData.append("property_detail", val.property_detail);
     formData.append("property_price", Number(val.property_price));
-    formData.append("property_image", val.property_image);
     formData.append("property_floorArea", Number(val.property_floorArea));
     formData.append("property_beds", Number(val.property_beds));
     formData.append("property_bathrooms", Number(val.property_bathrooms));
     formData.append("property_address", val.property_address);
-
+    formData.append("property_image", propertyPhoto || "");
     try {
       await addProperty({
         body: formData,
@@ -80,22 +100,10 @@ const AddProperty = () => {
       nav(-1);
     } catch (err) {
       toast.error(err);
+      console.log(err.data.message);
     }
   };
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    console.log("Selected file:", file);
-    setValue("property_image", file);
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      setValue("preview", reader.result);
-    };
-
-    if (file) {
-      reader.readAsDataURL(file);
-    }
-  };
 
   if (isLoading) {
     return <Loading />;
@@ -103,13 +111,13 @@ const AddProperty = () => {
 
   return (
     <div>
-      <div className="text-center">
-        <h1 className="text-2xl mt-8 p-8">Add Property</h1>
+      <div className="">
+        <h1 className="text-2xl text-center mt-8 p-8">Add Property</h1>
         <form onSubmit={handleSubmit(submitForm)}>
-          <div className="flex flex-col justify-center items-center gap-4 mt-4 shadow-2xl bg-gray-100 p-6 md:w-[700px] mx-auto">
+          <div className="flex flex-col   gap-4 mt-4 shadow-2xl bg-gray-100 p-6 md:w-[650px] mx-auto">
             <input
               {...register("property_name")}
-              className="w-[300px] md:w-[600px] p-3 text-sm border border-black rounded"
+              className="w-full p-3 text-sm border border-black rounded"
               placeholder="Property Name"
             />
             {errors.property_name && (
@@ -117,11 +125,11 @@ const AddProperty = () => {
                 {errors.property_name.message}
               </span>
             )}
-            <div className="grid grid-cols-2 gap-4 gap-x-24 overflow-hidden">
+            <div className="grid grid-cols-2 gap-4  overflow-hidden">
               <div>
                 <input
                   {...register("property_price")}
-                  className="w-[250px] p-3 text-sm border border-black rounded"
+                  className="w-full p-3 text-sm border border-black rounded"
                   placeholder="Property Price"
                 />
                 {errors.property_price && (
@@ -134,7 +142,7 @@ const AddProperty = () => {
               <div>
                 <input
                   {...register("property_floorArea")}
-                  className="w-[250px] p-3 text-sm border border-black rounded"
+                  className="w-full p-3 text-sm border border-black rounded"
                   placeholder="Enter FloorArea"
                 />
                 {errors.property_floorArea && (
@@ -147,7 +155,7 @@ const AddProperty = () => {
               <div>
                 <input
                   {...register("property_beds")}
-                  className="w-[250px] p-3 text-sm border border-black rounded"
+                  className="w-full p-3 text-sm border border-black rounded"
                   placeholder="Enter Beds"
                 />
                 {errors.property_beds && (
@@ -160,7 +168,7 @@ const AddProperty = () => {
               <div>
                 <input
                   {...register("property_bathrooms")}
-                  className="w-[250px] p-3 text-sm border border-black rounded"
+                  className="w-full p-3 text-sm border border-black rounded"
                   placeholder="Enter bathrooms"
                 />
                 {errors.property_bathrooms && (
@@ -171,15 +179,20 @@ const AddProperty = () => {
               </div>
             </div>
 
-            <div className="text-left">
-              <div>
-                <p>Select an Image</p>
+            <div className="text-left ">
+              <div className="text-left">
+
+                <p className="text-left">Select an Image</p>
                 <input
-                  {...register("property_image")}
-                  onChange={handleImageChange}
+                className=""
+                  name="property_image"
                   type="file"
+                  onChange={(e) => {
+                    handleImageChange(e);
+                  }}
                 />
-                <div className="border border-gray-600 h-[150px] my-1 w-full">
+              </div>
+                <div className="border  border-gray-600 h-[150px] my-1 w-[400px]">
                   {watch("preview") && (
                     <img
                       src={watch("preview")}
@@ -188,11 +201,10 @@ const AddProperty = () => {
                     />
                   )}
                 </div>
-              </div>
             </div>
             <input
               {...register("property_address")}
-              className="w-[300px] md:w-[600px] p-3 text-sm border border-black rounded"
+              className="w-full p-3 text-sm border border-black rounded"
               placeholder="Enter address"
             />
             {errors.property_address && (
@@ -204,7 +216,7 @@ const AddProperty = () => {
             <textarea
               {...register("property_detail")}
               placeholder="Enter property detail"
-              className="w-[300px] md:w-[600px] h-[200px] p-3 border border-black rounded"
+              className="w-full h-[200px] p-3 border border-black rounded"
             />
             {errors.property_detail && (
               <span className="text-red-500">
